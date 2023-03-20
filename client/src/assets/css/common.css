@@ -1,0 +1,32 @@
+:root {
+  --primary-color: #ff9854;
+  --van-search-left-icon-color: var(--primary-color);
+  --theme-linear-gradient: linear-gradient(90deg, #fa8c1d, #fcaf3f);
+}
+
+body {
+  font-size: 14px;
+  background-color: rgba(218, 221, 221, 0.7);
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+  /* font-family: 'Courier New', Courier, monospace; */
+}
+
+.top-page {
+  position: relative;
+  z-index: 9;
+  height: 100vh;
+  background-color: #fff;
+  overflow-y: auto;
+}
+
+#app {
+  height: 100vh;
+}
+
+.iconfont {
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}

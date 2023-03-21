@@ -545,8 +545,12 @@ exports.getCalBLtStatus = (req, res) => {
         // 0.7为该步骤进度权重
         return res.send({ status: 1, msg: '计算中', data: { processPercentage: 30 + Math.floor((bodylenExlNum / totalNum) * 100 * 0.7) } })
       }
-    } else {
+    } else if (calBodyLentWorkerProcess[userAccount].exitCode === 0) {
+      delete calBodyLenImgsTotal[userAccount]
       return res.valid_cc('空闲', 0)
+    } else {
+      delete calBodyLenImgsTotal[userAccount]
+      return res.valid_cc('上一次处理出错了！', 2)
     }
   }
 }
@@ -554,12 +558,20 @@ exports.getCalBLtStatus = (req, res) => {
 /* 下载体长线结算结果 */
 exports.downloadCalBLRes = (req, res) => {
   const userAccount = req.auth.account
-  const bodyLenResPath = path.join(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/calBodyLength/output/bodyLength`).replace(/\\/g, '/')
-  if (fs.existsSync(bodyLenResPath) || fs.readdirSync(bodyLenResPath).length === 0) {
+  const bodyLenResPath = path
+    .join(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/calBodyLength/output/bodyLength/ELK_length_Res.csv`)
+    .replace(/\\/g, '/')
+  if (!fs.existsSync(bodyLenResPath)) {
     return res.valid_cc('暂无结果展示')
   }
+  const csvReadStream = fs.createReadStream(bodyLenResPath)
+  res.set({
+    'Content-Type': 'application/octet-stream', // 告诉浏览器这是一个二进制文件
+    'Content-Disposition': 'attachment; filename=' + `ELK_length_Res.csv`, // 告诉浏览器这是一个需要下载的文件
+  })
+  csvReadStream.pipe(res)
 
-  // 开启一个子进程压缩打包计算的体长线csv结果
+  /* // 开启一个子进程压缩打包计算的体长线csv结果
   const zipWorkerProcess = child_process.exec(`cd ${bodyLenResPath} && tar -czvf ./elk_body_length.zip ./*.csv`, (error, stdout, stderr) => {
     if (error) {
       return res.valid_cc(error)
@@ -577,5 +589,5 @@ exports.downloadCalBLRes = (req, res) => {
       })
       zipReadStream.pipe(res)
     }
-  })
+  }) */
 }

@@ -2,6 +2,7 @@ const child_process = require('child_process')
 const { spawn } = require('child_process')
 const db = require('../db/index')
 const fs = require('fs')
+const images = require('images')
 const { DL_uploadPath } = require('../config')
 const { mkdir, emptyDir, isRunning } = require('../utils/pythonDL')
 const path = require('path')
@@ -54,19 +55,27 @@ exports.doObjDetect = (req, res) => {
     args += ` --${arg} ${data[arg]}`
   }
   // 设置输入和输出路径
-  const inDir = path.resolve(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/objDet/input`)
-  const outDir = path.resolve(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/objDet/output`)
-  // 为py文件拼接输入和输出路径参数
-  args += ` --inDir ${inDir} --outDir ${outDir}`
+  const inDir = path.resolve(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/objDet/input`).replace(/\\/g, '/')
+  const outDir = path.resolve(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/objDet/output`).replace(/\\/g, '/')
   // 清空目标输出路径下内容
-  emptyDir(outDir)
   // 判断目标路径是否存在，没有则创建
-  if (!mkdir(outputDestPath)) {
+  if (!mkdir(outDir)) {
     return res.valid_cc('error,请联系管理员')
   }
+  emptyDir(outDir)
+
+  // 清空预览文件夹
+  const previewPath = path.join(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/objDet/preview`).replace(/\\/g, '/')
+  if (!mkdir(previewPath)) {
+    return res.valid_cc('error,请联系管理员')
+  }
+  emptyDir(previewPath)
+
   if (fs.readdirSync(inDir).length === 0) {
     return res.valid_cc('暂无可处理数据')
   }
+  // 为py文件拼接输入和输出路径参数
+  args += ` --inDir ${inDir} --outDir ${outDir} --previewPath ${previewPath}`
   // 开启子进程调用python,此处用的是exec(),会新开启一个shell执行
   detWorkerProcess[userAccount] = child_process.exec(
     `activate ${condaEnv} && python _objectDetectNodePy.py ${args}`,
@@ -380,7 +389,6 @@ exports.downloadSegExtRes = (req, res) => {}
 /* 上传信息提取的结果 */
 exports.uploadSegExtRes = (req, res) => {
   const files = req.files
-  console.log(files)
   const userAccount = req.auth.account
   // 设置放置影像和标签文件的目标路径
   const segExtResPath = path.join(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/calBodyLength/input`).replace(/\\/g, '/')
@@ -541,4 +549,33 @@ exports.getCalBLtStatus = (req, res) => {
       return res.valid_cc('空闲', 0)
     }
   }
+}
+
+/* 下载体长线结算结果 */
+exports.downloadCalBLRes = (req, res) => {
+  const userAccount = req.auth.account
+  const bodyLenResPath = path.join(__dirname, '../', `${DL_uploadPath}/users/${userAccount}/calBodyLength/output/bodyLength`).replace(/\\/g, '/')
+  if (fs.existsSync(bodyLenResPath) || fs.readdirSync(bodyLenResPath).length === 0) {
+    return res.valid_cc('暂无结果展示')
+  }
+
+  // 开启一个子进程压缩打包计算的体长线csv结果
+  const zipWorkerProcess = child_process.exec(`cd ${bodyLenResPath} && tar -czvf ./elk_body_length.zip ./*.csv`, (error, stdout, stderr) => {
+    if (error) {
+      return res.valid_cc(error)
+    }
+  })
+  zipWorkerProcess.on('exit', (code) => {
+    if (code !== 0) {
+      return res.valid_cc('出错了', 1)
+    } else {
+      // 打包成功向用户返回压缩包的文件流
+      const zipReadStream = fs.createReadStream(`${bodyLenResPath}/elk_body_length.zip`)
+      res.set({
+        'Content-Type': 'application/octet-stream', // 告诉浏览器这是一个二进制文件
+        'Content-Disposition': 'attachment; filename=' + `elk_body_length.zip`, // 告诉浏览器这是一个需要下载的文件
+      })
+      zipReadStream.pipe(res)
+    }
+  })
 }

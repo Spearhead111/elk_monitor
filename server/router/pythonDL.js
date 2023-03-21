@@ -29,5 +29,7 @@ router.post('/uploadSegExtRes', pythonDLHandler.uploadSegExtRes)
 router.post('/calBodyLength', pythonDLHandler.calBodyLength)
 /* 获取计算体长进程状态 */
 router.get('/getCalBLtStatus', pythonDLHandler.getCalBLtStatus)
+/* 下载体长线计算结果 */
+router.get('/downloadCalBLRes', pythonDLHandler.downloadCalBLRes)
 
 module.exports = router

@@ -233,6 +233,7 @@ a {
   width: 190px;
   background-image: linear-gradient(to bottom, #3d526e, #565e82);
   transition: all 0.5s ease;
+  z-index: 10000;
 
   .logo {
     height: 60px;

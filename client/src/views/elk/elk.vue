@@ -49,7 +49,7 @@ body {
     width: 100%;
     height: 100px;
     background: linear-gradient(to top #0a2a43 transparent);
-    z-index: 10000;
+    z-index: 9999;
   }
   &:after {
     content: '';

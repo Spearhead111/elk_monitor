@@ -54,7 +54,14 @@
         <button :class="{ btn: true, 'btn-disabled': disabled }" :disabled="disabled" @click="calBodyLen()">计算体长</button>
       </div>
     </div>
-    <div class="cal-body_len"></div>
+    <div class="cal-body_len cal-body_len2">
+      <div class="head-div option">
+        <div class="head-div-child download-res" @click="downloadCalBLRes()">
+          <span>下载结果</span>
+          <i class="iconfont icon-xiazai"></i>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -162,13 +169,40 @@ function getCalBLtStatus() {
       if (res.status === 0) {
         disabled.value = false
         percentage.value = 0
-      } else {
+      } else if (res.status === 1) {
         disabled.value = true
         percentage.value = res.data.processPercentage
         setTimeout(() => {
           getCalBLtStatus()
         }, 1000)
+      } else {
+        disabled.value = true
+        ElMessage({ showClose: true, message: res.msg, type: 'warning' })
       }
+    },
+    (err) => {}
+  )
+}
+/* 下载体长线计算结果 */
+function downloadCalBLRes() {
+  DLService.downloadCalBLRes().then(
+    (res: any) => {
+      if (res.status) {
+        return ElMessage({ showClose: true, message: res.msg, type: 'warning' })
+      }
+      // 将响应数据处理为Blob类型
+      const blob = new Blob([res])
+      const url = window.URL.createObjectURL(blob)
+      // 创建一个a标签
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      a.download = 'ELK_length_Res.csv'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a) //下载完成移除元素
+      // 释放之前创建的URL对象
+      URL.revokeObjectURL(url)
     },
     (err) => {}
   )
@@ -332,6 +366,37 @@ onMounted(() => {
     cursor: pointer;
     &:hover {
       color: #409eff;
+    }
+  }
+}
+.cal-body_len2 {
+  .head-div {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+
+    .head-div-child {
+      position: relative;
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      .icon-cuowu {
+        margin: 0;
+        opacity: 0.7;
+      }
+    }
+
+    .icon-xiazai {
+      margin: 0px 20px 0px 5px;
+    }
+    .download-res {
+      cursor: pointer;
+      &:hover {
+        color: #409eff;
+        .icon-xiazai {
+          color: #409eff;
+        }
+      }
     }
   }
 }

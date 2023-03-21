@@ -66,5 +66,10 @@ const DLService = {
     const url = '/DL/getCalBLtStatus'
     return MyRequest.get(url)
   },
+  /* 下载体长线计算结果 */
+  downloadCalBLRes() {
+    const url = '/DL/downloadCalBLRes'
+    return MyRequest.get(url, {}, { responseType: 'blob' })
+  },
 }
 export default DLService

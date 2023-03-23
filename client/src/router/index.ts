@@ -26,7 +26,7 @@ const router = createRouter({
     {
       path: '/elk',
       component: () => import('@/views/elk/elk.vue'),
-      meta: { needVerify: true },
+      meta: { needVerify: true, minimizeSidebar: true },
     },
     {
       path: '/404',

@@ -421,8 +421,8 @@ function changeNickname() {
   background-color: #101014;
   box-shadow: 2px 2px 4px #101014;
   &:hover {
-    background-color: #62c671 !important;
-    color: #101014;
+    color: #f5f0f0 !important;
+    background-color: #101014 !important;
   }
 }
 .ncie-btn2-cancel {

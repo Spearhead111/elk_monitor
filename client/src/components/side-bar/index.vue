@@ -153,11 +153,17 @@ function jumpToUserCenter() {
 function logout() {
   userStore.logout()
 }
+
+//暴露hideSidebar方法
+defineExpose({
+  hideSidebar,
+  minimizeSidebar,
+})
 </script>
 
 <style lang="less" scoped>
 .min-user {
-  z-index: 999;
+  z-index: 10001;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -233,7 +239,7 @@ a {
   width: 190px;
   background-image: linear-gradient(to bottom, #3d526e, #565e82);
   transition: all 0.5s ease;
-  z-index: 10000;
+  z-index: 10001;
 
   .logo {
     height: 60px;

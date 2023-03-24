@@ -1,5 +1,5 @@
 <template>
-  <side-bar ref="side_bar" v-show="!isHideSidebar" @sendSidebarWidth="changeMarginLeft"></side-bar>
+  <side-bar ref="side_bar" v-if="!isHideSidebar" @sendSidebarWidth="changeMarginLeft"></side-bar>
   <div id="router-view" :style="{ 'margin-left': `${left}px` }">
     <RouterView v-slot="{ Component }">
       <keep-alive :max="10">

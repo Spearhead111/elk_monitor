@@ -54,10 +54,15 @@ router.beforeEach((to, from, next) => {
         ElMessageBox.alert('登陆过期，请重新登录', '系统提示', {
           confirmButtonText: 'reLogin',
           type: 'warning',
-        }).then(() => {
-          localStorage.removeItem('token')
-          next('/login')
-        })
+        }).then(
+          () => {
+            userStore.logout()
+            next('/login')
+          },
+          () => {
+            userStore.logout()
+          }
+        )
       } else {
         next()
       }

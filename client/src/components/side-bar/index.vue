@@ -1,90 +1,94 @@
 <template>
-  <div ref="sidebarWrap" class="wrap animate__animated animate__slideInLeft animate__faster" v-show="!minimizeSidebar">
-    <!-- 头部logo start -->
-    <div class="logo">
-      <i class="iconfont icon-S- not_change_color" @click="toggle()"></i>
-      <span class="logo_name">Spearhead</span>
-    </div>
-    <!-- 头部logo end -->
-    <!-- 一级列表 start-->
-    <ul class="nav-links">
-      <li v-for="(mod, index) in sidebarList">
-        <div :class="{ 'selected-mod': selectedModIdx === index }"></div>
-        <!-- 一级列表名和icon -->
-        <div class="iocn-link">
-          <a @click="jump(mod.path, index)">
-            <i :class="['iconfont', mod.prefixIcon]" v-if="mod.prefixIcon"></i>
-            <img class="img-icon" v-if="mod.tag === 'elk'" src="@/assets/icons/elk.ico" />
-            <span class="link_name span_">{{ mod.naviName }}</span>
-          </a>
-          <!-- 展开收起的箭头标签 -->
-          <i v-if="mod.suffixIcon" :class="['suffix-icon', 'iconfont', mod.suffixIcon]" @click="expandList($event, index)"></i>
-        </div>
-        <!-- 二级列表 start -->
-        <div class="sub-menu-div">
-          <transition name="subMenu">
-            <ul class="sub-menu" v-show="showSecondMenu[index]">
-              <!-- 第一个li为一级列表名，只在缩放的时候显示 -->
-              <li class="sub-menu-title">
-                <a @click="jump(mod.path, index)" class="link_name">{{ mod.naviName }}</a>
-              </li>
-              <!-- 二级列表各项 -->
-              <li v-for="(secondMod, i) in mod.secondList">
-                <a @click="jump(secondMod.path, index)">{{ secondMod.name }}</a>
-              </li>
-            </ul>
-          </transition>
-        </div>
-        <!-- 二级列表 end -->
-      </li>
-    </ul>
-    <!-- 一级列表 end-->
-    <div class="user-info">
-      <div class="profile-pic">
-        <!-- 展开时的图片hover框 -->
-        <div class="expand-user animate__animated animate__fadeIn animate__faster"></div>
-        <img :src="userStore.avatarBase64 ?? require('@/assets/img/default_avatar.jpg')" />
-        <!-- 缩放时的图片hover框(ul列表) -->
-        <ul class="pic-expand animate__animated animate__fadeIn animate__faster">
-          <li>
-            <a><i class="expandIcon iconfont icon-24gl-shrink2" @click="hideSidebar()"></i></a>
-          </li>
-          <li>
-            <a><i class="expandIcon iconfont icon-jurassic_user" @click="jumpToUserCenter()"></i></a>
-          </li>
-          <li v-show="userStore.token">
-            <a><i class="expandIcon iconfont icon-tuichudenglu" @click="logout()"></i></a>
-          </li>
-          <li v-show="!userStore.token">
-            <a><i class="expandIcon iconfont icon-denglu" @click="jump('/login')"></i></a>
-          </li>
-        </ul>
+  <transition name="sidebar">
+    <div ref="sidebarWrap" class="wrap" v-show="!minimizeSidebar">
+      <!-- 头部logo start -->
+      <div class="logo">
+        <i class="iconfont icon-S- not_change_color" @click="toggle()"></i>
+        <span class="logo_name">Spearhead</span>
       </div>
-      <i class="logout iconfont icon-24gl-shrink2" @click="hideSidebar()"></i>
-      <i class="logout iconfont icon-jurassic_user" @click="jumpToUserCenter()"></i>
-      <i class="logout iconfont icon-tuichudenglu" @click="logout()" v-show="userStore.token"></i>
-      <i class="logout iconfont icon-denglu" @click="jump('/login')" v-show="!userStore.token"></i>
+      <!-- 头部logo end -->
+      <!-- 一级列表 start-->
+      <ul class="nav-links">
+        <li v-for="(mod, index) in sidebarList">
+          <div :class="{ 'selected-mod': selectedModIdx === index }"></div>
+          <!-- 一级列表名和icon -->
+          <div class="iocn-link">
+            <a @click="jump(mod.path, index)">
+              <i :class="['iconfont', mod.prefixIcon]" v-if="mod.prefixIcon"></i>
+              <img class="img-icon" v-if="mod.tag === 'elk'" src="@/assets/icons/elk.ico" />
+              <span class="link_name span_">{{ mod.naviName }}</span>
+            </a>
+            <!-- 展开收起的箭头标签 -->
+            <i v-if="mod.suffixIcon" :class="['suffix-icon', 'iconfont', mod.suffixIcon]" @click="expandList($event, index)"></i>
+          </div>
+          <!-- 二级列表 start -->
+          <div class="sub-menu-div">
+            <transition name="subMenu">
+              <ul class="sub-menu" v-show="showSecondMenu[index]">
+                <!-- 第一个li为一级列表名，只在缩放的时候显示 -->
+                <li class="sub-menu-title">
+                  <a @click="jump(mod.path, index)" class="link_name">{{ mod.naviName }}</a>
+                </li>
+                <!-- 二级列表各项 -->
+                <li v-for="(secondMod, i) in mod.secondList">
+                  <a @click="jump(secondMod.path, index)">{{ secondMod.name }}</a>
+                </li>
+              </ul>
+            </transition>
+          </div>
+          <!-- 二级列表 end -->
+        </li>
+      </ul>
+      <!-- 一级列表 end-->
+      <div class="user-info">
+        <div class="profile-pic">
+          <!-- 展开时的图片hover框 -->
+          <div class="expand-user animate__animated animate__fadeIn animate__faster"></div>
+          <img :src="userStore.avatarBase64 ?? require('@/assets/img/default_avatar.jpg')" />
+          <!-- 缩放时的图片hover框(ul列表) -->
+          <ul class="pic-expand">
+            <li>
+              <a><i class="expandIcon iconfont icon-24gl-shrink2" @click="hideSidebar()"></i></a>
+            </li>
+            <li>
+              <a><i class="expandIcon iconfont icon-jurassic_user" @click="jumpToUserCenter()"></i></a>
+            </li>
+            <li v-show="userStore.token">
+              <a><i class="expandIcon iconfont icon-tuichudenglu" @click="logout()"></i></a>
+            </li>
+            <li v-show="!userStore.token">
+              <a><i class="expandIcon iconfont icon-denglu" @click="jump('/login')"></i></a>
+            </li>
+          </ul>
+        </div>
+        <i class="logout iconfont icon-24gl-shrink2" @click="hideSidebar()"></i>
+        <i class="logout iconfont icon-jurassic_user" @click="jumpToUserCenter()"></i>
+        <i class="logout iconfont icon-tuichudenglu" @click="logout()" v-show="userStore.token"></i>
+        <i class="logout iconfont icon-denglu" @click="jump('/login')" v-show="!userStore.token"></i>
+      </div>
     </div>
-  </div>
+  </transition>
   <!-- 侧边栏最小化的用户头像框div -->
-  <div class="min-user animate__animated animate__zoomIn animate__faster" v-show="minimizeSidebar">
-    <img :src="userStore.avatarBase64 ?? require('@/assets/img/default_avatar.jpg')" />
-    <!-- 缩放时的图片hover框(ul列表) -->
-    <ul class="min-user-expand-ul animate__animated animate__fadeIn animate__faster">
-      <li>
-        <i class="min-user-expandIcon iconfont icon-fangda" @click="hideSidebar()"></i>
-      </li>
-      <li>
-        <i class="min-user-expandIcon iconfont icon-jurassic_user" @click="jumpToUserCenter()"></i>
-      </li>
-      <li v-show="userStore.token">
-        <i class="min-user-expandIcon iconfont icon-tuichudenglu" @click="logout()"></i>
-      </li>
-      <li v-show="!userStore.token">
-        <i class="min-user-expandIcon iconfont icon-denglu" @click="jump('/login')"></i>
-      </li>
-    </ul>
-  </div>
+  <transition name="min_user">
+    <div class="min-user" v-show="minimizeSidebar">
+      <img :src="userStore.avatarBase64 ?? require('@/assets/img/default_avatar.jpg')" />
+      <!-- 缩放时的图片hover框(ul列表) -->
+      <ul class="min-user-expand-ul">
+        <li>
+          <i class="min-user-expandIcon iconfont icon-fangda" @click="hideSidebar()"></i>
+        </li>
+        <li>
+          <i class="min-user-expandIcon iconfont icon-jurassic_user" @click="jumpToUserCenter()"></i>
+        </li>
+        <li v-show="userStore.token">
+          <i class="min-user-expandIcon iconfont icon-tuichudenglu" @click="logout()"></i>
+        </li>
+        <li v-show="!userStore.token">
+          <i class="min-user-expandIcon iconfont icon-denglu" @click="jump('/login')"></i>
+        </li>
+      </ul>
+    </div>
+  </transition>
 </template>
 
 <script lang="ts" setup>
@@ -187,7 +191,9 @@ defineExpose({
   }
   &:hover .min-user-expand-ul {
     display: block;
+    animation: scale-in-ver-bottom 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
+
   .min-user-expand-ul {
     display: none;
     position: absolute;
@@ -211,6 +217,21 @@ defineExpose({
       cursor: pointer;
     }
   }
+}
+
+.min_user-enter-active,
+.min_user-leave-active {
+  transition: all 1s ease;
+}
+.min_user-enter-from,
+.min_user-leave-to,
+.min_user-leave-from {
+  opacity: 0;
+  transform: scale(0);
+}
+.min_user-enter-to {
+  opacity: 1;
+  transform: scale(1);
 }
 
 * {
@@ -345,6 +366,17 @@ a {
   }
 }
 
+.sidebar-enter-from,
+.sidebar-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.sidebar-enter-to,
+.sidebar-leave-from {
+  opacity: 1;
+}
+
 .user-info {
   position: absolute;
   display: flex;
@@ -380,6 +412,7 @@ a {
       padding: 10px 0;
       color: #fff;
       background: #49546d;
+      animation: scale-in-ver-bottom 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
       li a .expandIcon {
         width: 32px;
         height: 32px;
@@ -542,5 +575,23 @@ a {
   min-width: 60px;
   height: 50px;
   padding: 10px;
+}
+
+/**
+* ----------------------------------------
+* animation scale-in-ver-bottom
+* ----------------------------------------
+*/
+@keyframes scale-in-ver-bottom {
+  0% {
+    transform: scaleY(0);
+    transform-origin: 0% 100%;
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    transform-origin: 0% 100%;
+    opacity: 1;
+  }
 }
 </style>

@@ -366,6 +366,10 @@ a {
   }
 }
 
+.sidebar-enter-active,
+.sidebar-leave-active {
+  transition: all 0.5s ease;
+}
 .sidebar-enter-from,
 .sidebar-leave-to {
   opacity: 0;

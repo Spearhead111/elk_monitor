@@ -76,12 +76,26 @@ body {
   }
   #text {
     position: relative;
-    color: #d2f9dc;
+    color: #abf5d5;
     font-size: 10em;
     z-index: 1;
+    animation: text-pop-up-top 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   }
   #elks {
     z-index: 2;
+  }
+  @keyframes text-pop-up-top {
+    0% {
+      transform: translateY(0);
+      transform-origin: 50% 50%;
+      text-shadow: none;
+    }
+    100% {
+      transform: translateY(-50px);
+      transform-origin: 50% 50%;
+      text-shadow: 0 1px 0 #ccc, 0 2px 0 #ccc, 0 3px 0 #ccc, 0 4px 0 #ccc, 0 5px 0 #ccc, 0 6px 0 #ccc, 0 7px 0 #ccc, 0 8px 0 #ccc, 0 9px 0 #ccc,
+        0 50px 30px rgba(0, 0, 0, 0.3);
+    }
   }
 }
 </style>

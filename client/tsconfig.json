@@ -12,7 +12,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     // 抑制隐式任何索引错误
-    "suppressImplicitAnyIndexErrors": true,
+    // "suppressImplicitAnyIndexErrors": true,
     "noEmit": true,
     //解析非相对模块的基础地址，默认是当前目录
  	  "baseUrl": "./",
